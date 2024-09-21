@@ -94,7 +94,15 @@ const manager = new ProductManager('products.json');
 manager.addProduct("Produto 1", "Descrição do produto 1", 100, "img1.png", "P001", 10);
 manager.addProduct("Produto 2", "Descrição do produto 2", 200, "img2.png", "P002", 15);
 
-console.log(manager.getProductById(1));
+const product = manager.getProductById(1);
+if (product) {
+  console.log(product);
+}
+
+const product2 = manager.getProductById(3);
+if (product2) {
+  console.log(product2);
+}
 
 manager.updateProduct(1, { price: 120, stock: 8 });
 
