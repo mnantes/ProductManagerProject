@@ -1,0 +1,15 @@
+{
+  "name": "product-manager-api",
+  "version": "1.0.0",
+  "description": "API para gerenciar produtos usando Express e Node.js",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "keywords": [],
+  "author": "Seu Nome",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}
