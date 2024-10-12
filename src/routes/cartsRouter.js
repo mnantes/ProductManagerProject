@@ -5,10 +5,11 @@ const cartManager = new CartManager('carrito.json');
 
 router.post('/', async (req, res) => {
   try {
-    const newCart = await cartManager.createCart();
+    const { products = [] } = req.body;
+    const newCart = await cartManager.createCart(products);
     res.status(201).json(newCart);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
 

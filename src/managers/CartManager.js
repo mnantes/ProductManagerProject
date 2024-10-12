@@ -29,10 +29,14 @@ class CartManager {
     await fs.writeFile(this.path, JSON.stringify(this.carts, null, 2), 'utf-8');
   }
 
-  async createCart() {
+  async createCart(products = []) {
+    if (!Array.isArray(products)) {
+      throw new Error("Os produtos devem ser um array.");
+    }
+
     const newCart = {
       id: ++this.currentId,
-      products: []
+      products
     };
 
     this.carts.push(newCart);

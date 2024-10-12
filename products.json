@@ -1,1 +1,13 @@
-[]
+[
+  {
+    "id": 1,
+    "title": "Produto Inicial",
+    "description": "Este é um produto adicionado tentado no JSON",
+    "price": 100,
+    "code": "P001",
+    "stock": 10,
+    "category": "Eletrônicos",
+    "thumbnails": [],
+    "status": true
+  }
+]

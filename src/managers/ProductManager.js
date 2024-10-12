@@ -72,7 +72,7 @@ class ProductManager {
       throw new Error("Produto não encontrado.");
     }
 
-    const { id: _, ...fieldsToUpdate } = updatedFields;  // Impede que o ID seja atualizado
+    const { id: _, ...fieldsToUpdate } = updatedFields;
     this.products[productIndex] = { ...this.products[productIndex], ...fieldsToUpdate };
     await this.saveProducts();
     return this.products[productIndex];
