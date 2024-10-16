@@ -9,5 +9,16 @@
     "category": "Eletrônicos",
     "thumbnails": [],
     "status": true
+  },
+  {
+    "id": 2,
+    "title": "obo",
+    "description": "dsd",
+    "price": "5",
+    "code": "123",
+    "stock": "5",
+    "category": "rer",
+    "thumbnails": [],
+    "status": true
   }
 ]

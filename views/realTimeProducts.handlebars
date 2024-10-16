@@ -17,8 +17,12 @@
   <h2>Adicionar Novo Produto</h2>
   <form id="productForm">
     <input type="text" id="title" placeholder="Título" required>
+    <input type="text" id="description" placeholder="Descrição" required>
     <input type="number" id="price" placeholder="Preço" required>
+    <input type="text" id="code" placeholder="Código" required>
+    <input type="number" id="stock" placeholder="Estoque" required>
     <input type="text" id="category" placeholder="Categoria" required>
+    <input type="text" id="thumbnails" placeholder="Thumbnails (opcional)">
     <button type="submit">Adicionar Produto</button>
   </form>
 
@@ -32,9 +36,20 @@
       e.preventDefault();
       const productData = {
         title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
         price: document.getElementById('price').value,
+        code: document.getElementById('code').value,
+        stock: document.getElementById('stock').value,
         category: document.getElementById('category').value,
+        thumbnails: document.getElementById('thumbnails').value ? [document.getElementById('thumbnails').value] : []
       };
+
+      // Verifica se algum campo obrigatório está vazio
+      if (!productData.title || !productData.description || !productData.price || !productData.code || !productData.stock || !productData.category) {
+        alert("Todos os campos obrigatórios devem ser preenchidos.");
+        return;
+      }
+
       socket.emit('addProduct', productData);
       productForm.reset();
     });

@@ -39,6 +39,7 @@ class ProductManager {
   }
 
   async addProduct({ title, description, price, code, stock, category, thumbnails = [], status = true }) {
+    // Validação dos campos obrigatórios
     if (!title || !description || !price || !code || !stock || !category) {
       throw new Error("Todos os campos são obrigatórios, exceto thumbnails.");
     }
