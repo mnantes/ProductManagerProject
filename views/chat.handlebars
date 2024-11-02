@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat em Tempo Real</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <h1>Chat em Tempo Real</h1>
+    <div id="messages"></div>
+    <input id="user" type="text" placeholder="Seu e-mail" />
+    <input id="message" type="text" placeholder="Digite sua mensagem" />
+    <button onclick="sendMessage()">Enviar</button>
+
+    <script>
+        const socket = io();
+
+        socket.on('messageHistory', (messages) => {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = messages.map(msg => `<p><strong>${msg.user}:</strong> ${msg.message}</p>`).join('');
+        });
+
+        socket.on('newMessage', (msg) => {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML += `<p><strong>${msg.user}:</strong> ${msg.message}</p>`;
+        });
+
+        function sendMessage() {
+            const user = document.getElementById('user').value;
+            const message = document.getElementById('message').value;
+            socket.emit('sendMessage', { user, message });
+            document.getElementById('message').value = '';
+        }
+    </script>
+</body>
+</html>

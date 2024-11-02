@@ -1,70 +1,49 @@
-const fs = require('fs').promises;
+const Cart = require('../models/Cart'); // Importa o modelo Cart
 
 class CartManager {
-  constructor(path) {
-    this.path = path;
-    this.carts = [];
-    this.currentId = 0;
-    this.init();
-  }
-
-  async init() {
-    await this.loadCarts();
-  }
-
-  async loadCarts() {
-    try {
-      const data = await fs.readFile(this.path, 'utf-8');
-      this.carts = JSON.parse(data);
-      if (this.carts.length > 0) {
-        this.currentId = this.carts[this.carts.length - 1].id;
-      }
-    } catch {
-      this.carts = [];
-      await this.saveCarts();
-    }
-  }
-
-  async saveCarts() {
-    await fs.writeFile(this.path, JSON.stringify(this.carts, null, 2), 'utf-8');
-  }
-
   async createCart(products = []) {
-    if (!Array.isArray(products)) {
-      throw new Error("Os produtos devem ser um array.");
+    try {
+      if (!Array.isArray(products)) {
+        throw new Error("Os produtos devem ser um array.");
+      }
+
+      const newCart = new Cart({ products });
+      return await newCart.save();
+    } catch (error) {
+      console.error("Erro ao criar carrinho:", error);
+      throw error;
     }
-
-    const newCart = {
-      id: ++this.currentId,
-      products
-    };
-
-    this.carts.push(newCart);
-    await this.saveCarts();
-    return newCart;
   }
 
   async getCartById(id) {
-    const cart = this.carts.find(cart => cart.id === id);
-    return cart || null;
+    try {
+      const cart = await Cart.findById(id).populate('products.product');
+      if (!cart) throw new Error("Carrinho não encontrado");
+      return cart;
+    } catch (error) {
+      console.error("Erro ao buscar carrinho:", error);
+      throw error;
+    }
   }
 
   async addProductToCart(cartId, productId) {
-    const cart = await this.getCartById(cartId);
+    try {
+      const cart = await Cart.findById(cartId);
+      if (!cart) throw new Error("Carrinho não encontrado");
 
-    if (!cart) {
-      throw new Error("Carrinho não encontrado.");
+      const productInCart = cart.products.find(p => p.product.toString() === productId);
+      if (productInCart) {
+        productInCart.quantity += 1;
+      } else {
+        cart.products.push({ product: productId, quantity: 1 });
+      }
+
+      await cart.save();
+      return cart;
+    } catch (error) {
+      console.error("Erro ao adicionar produto ao carrinho:", error);
+      throw error;
     }
-
-    const productInCart = cart.products.find(p => p.product === productId);
-    if (productInCart) {
-      productInCart.quantity += 1;
-    } else {
-      cart.products.push({ product: productId, quantity: 1 });
-    }
-
-    await this.saveCarts();
-    return cart;
   }
 }
 

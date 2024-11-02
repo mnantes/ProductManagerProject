@@ -3,12 +3,17 @@ const { Server } = require('socket.io');
 const handlebars = require('express-handlebars');
 const productsRouter = require('./routes/productsRouter');
 const cartsRouter = require('./routes/cartsRouter');
-const ProductManager = require('./managers/ProductManager');
+const connectDB = require('./config/mongo');
+const ProductManager = require(__dirname + '/managers/ProductManager');
+const Message = require('./models/Message'); // Importa o modelo Message
 
 const app = express();
 const port = 8080;
 
-// Handlebars
+// Conectar ao MongoDB
+connectDB();
+
+// Configurar Handlebars
 app.engine('handlebars', handlebars.engine());
 app.set('view engine', 'handlebars');
 app.set('views', './views');
@@ -16,29 +21,34 @@ app.set('views', './views');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
+// Configurar rotas
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 
-
+// Servir arquivos estáticos
 app.use(express.static('public'));
 
-
+// Instanciar ProductManager
 const productManager = new ProductManager('products.json');
 
-// rota home.handlebars
+// Rota para home.handlebars
 app.get('/', async (req, res) => {
   const products = await productManager.getProducts();
   res.render('home', { products });
 });
 
-
+// Rota para realTimeProducts.handlebars
 app.get('/realtimeproducts', async (req, res) => {
   const products = await productManager.getProducts();
   res.render('realTimeProducts', { products });
 });
 
+// Rota para chat.handlebars
+app.get('/chat', (req, res) => {
+  res.render('chat');
+});
 
+// Iniciar servidor
 const server = app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
@@ -46,16 +56,27 @@ const server = app.listen(port, () => {
 // Configurar WebSocket
 const io = new Server(server);
 
-
 io.on('connection', (socket) => {
   console.log('Novo cliente conectado');
 
+  // Enviar histórico de mensagens ao cliente
+  Message.find().then((messages) => {
+    socket.emit('messageHistory', messages);
+  });
 
+  // Escutar e salvar novas mensagens
+  socket.on('sendMessage', async (data) => {
+    const newMessage = new Message(data);
+    await newMessage.save();
+    io.emit('newMessage', data);
+  });
+
+  // Adicionar e remover produtos (WebSocket)
   socket.on('addProduct', async (productData) => {
     try {
       const newProduct = await productManager.addProduct(productData);
       const products = await productManager.getProducts();
-      io.emit('updateProducts', products); 
+      io.emit('updateProducts', products);
     } catch (error) {
       console.error(error.message);
     }
@@ -65,9 +86,10 @@ io.on('connection', (socket) => {
     try {
       await productManager.deleteProduct(productId);
       const products = await productManager.getProducts();
-      io.emit('updateProducts', products); 
+      io.emit('updateProducts', products);
     } catch (error) {
       console.error(error.message);
     }
   });
 });
+

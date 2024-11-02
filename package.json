@@ -10,8 +10,10 @@
   "author": "Seu Nome",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.4.5",
     "express": "^4.21.0",
     "express-handlebars": "^8.0.1",
-    "socket.io": "^4.8.0"
+    "mongoose": "^8.8.0",
+    "socket.io": "^4.8.1"
   }
 }

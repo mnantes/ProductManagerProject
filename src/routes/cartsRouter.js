@@ -1,7 +1,7 @@
 const express = require('express');
-const CartManager = require('../managers/CartManager');
+const CartManager = require('../managers/CartManager'); // Importa o CartManager atualizado
 const router = express.Router();
-const cartManager = new CartManager('carrito.json');
+const cartManager = new CartManager(); // Não precisa de caminho de arquivo, pois estamos usando o MongoDB
 
 router.post('/', async (req, res) => {
   try {
@@ -15,7 +15,7 @@ router.post('/', async (req, res) => {
 
 router.get('/:cid', async (req, res) => {
   try {
-    const cart = await cartManager.getCartById(parseInt(req.params.cid));
+    const cart = await cartManager.getCartById(req.params.cid);
     if (cart) {
       res.json(cart);
     } else {
@@ -28,7 +28,7 @@ router.get('/:cid', async (req, res) => {
 
 router.post('/:cid/product/:pid', async (req, res) => {
   try {
-    const cart = await cartManager.addProductToCart(parseInt(req.params.cid), parseInt(req.params.pid));
+    const cart = await cartManager.addProductToCart(req.params.cid, req.params.pid);
     res.json(cart);
   } catch (error) {
     res.status(400).json({ error: error.message });

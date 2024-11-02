@@ -1,93 +1,56 @@
-const fs = require('fs').promises;
+const Product = require('../models/Product'); // Importa o modelo Product
 
 class ProductManager {
-  constructor(path) {
-    this.path = path;
-    this.products = [];
-    this.currentId = 0;
-    this.init();
-  }
-
-  async init() {
-    await this.loadProducts();
-  }
-
-  async loadProducts() {
-    try {
-      const data = await fs.readFile(this.path, 'utf-8');
-      this.products = JSON.parse(data);
-      if (this.products.length > 0) {
-        this.currentId = this.products[this.products.length - 1].id;
-      }
-    } catch {
-      this.products = [];
-      await this.saveProducts();
-    }
-  }
-
-  async saveProducts() {
-    await fs.writeFile(this.path, JSON.stringify(this.products, null, 2), 'utf-8');
-  }
-
   async getProducts(limit) {
-    return limit ? this.products.slice(0, limit) : this.products;
+    try {
+      return limit ? await Product.find().limit(limit) : await Product.find();
+    } catch (error) {
+      console.error("Erro ao buscar produtos:", error);
+      throw error;
+    }
   }
 
   async getProductById(id) {
-    const product = this.products.find(product => product.id === id);
-    return product || null;
+    try {
+      const product = await Product.findById(id);
+      if (!product) throw new Error("Produto não encontrado");
+      return product;
+    } catch (error) {
+      console.error("Erro ao buscar produto:", error);
+      throw error;
+    }
   }
 
-  async addProduct({ title, description, price, code, stock, category, thumbnails = [], status = true }) {
-    // Validação dos campos obrigatórios
-    if (!title || !description || !price || !code || !stock || !category) {
-      throw new Error("Todos os campos são obrigatórios, exceto thumbnails.");
+  async addProduct(data) {
+    try {
+      const newProduct = new Product(data);
+      return await newProduct.save();
+    } catch (error) {
+      console.error("Erro ao adicionar produto:", error);
+      throw error;
     }
-
-    const codeExists = this.products.some(product => product.code === code);
-    if (codeExists) {
-      throw new Error(`O código ${code} já está em uso.`);
-    }
-
-    const newProduct = {
-      id: ++this.currentId,
-      title,
-      description,
-      price,
-      code,
-      stock,
-      category,
-      thumbnails,
-      status
-    };
-
-    this.products.push(newProduct);
-    await this.saveProducts();
-    return newProduct;
   }
 
-  async updateProduct(id, updatedFields) {
-    const productIndex = this.products.findIndex(product => product.id === id);
-
-    if (productIndex === -1) {
-      throw new Error("Produto não encontrado.");
+  async updateProduct(id, data) {
+    try {
+      const updatedProduct = await Product.findByIdAndUpdate(id, data, { new: true });
+      if (!updatedProduct) throw new Error("Produto não encontrado");
+      return updatedProduct;
+    } catch (error) {
+      console.error("Erro ao atualizar produto:", error);
+      throw error;
     }
-
-    const { id: _, ...fieldsToUpdate } = updatedFields;
-    this.products[productIndex] = { ...this.products[productIndex], ...fieldsToUpdate };
-    await this.saveProducts();
-    return this.products[productIndex];
   }
 
   async deleteProduct(id) {
-    const productIndex = this.products.findIndex(product => product.id === id);
-
-    if (productIndex === -1) {
-      throw new Error("Produto não encontrado.");
+    try {
+      const deletedProduct = await Product.findByIdAndDelete(id);
+      if (!deletedProduct) throw new Error("Produto não encontrado");
+      return deletedProduct;
+    } catch (error) {
+      console.error("Erro ao deletar produto:", error);
+      throw error;
     }
-
-    this.products.splice(productIndex, 1);
-    await this.saveProducts();
   }
 }
 
