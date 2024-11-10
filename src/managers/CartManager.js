@@ -45,6 +45,44 @@ class CartManager {
       throw error;
     }
   }
+
+  // Novo método para atualizar o carrinho com uma lista completa de produtos
+  async updateCart(cartId, products) {
+    try {
+      return await Cart.findByIdAndUpdate(cartId, { products }, { new: true });
+    } catch (error) {
+      console.error("Erro ao atualizar carrinho:", error);
+      throw error;
+    }
+  }
+
+  // Novo método para atualizar a quantidade de um produto específico no carrinho
+  async updateProductQuantity(cartId, productId, quantity) {
+    try {
+      const cart = await this.getCartById(cartId);
+      if (!cart) throw new Error("Carrinho não encontrado");
+
+      const productInCart = cart.products.find(p => p.product.toString() === productId);
+      if (!productInCart) throw new Error("Produto não encontrado no carrinho");
+
+      productInCart.quantity = quantity;
+      await cart.save();
+      return cart;
+    } catch (error) {
+      console.error("Erro ao atualizar quantidade do produto no carrinho:", error);
+      throw error;
+    }
+  }
+
+  // Novo método para limpar todos os produtos do carrinho
+  async clearCart(cartId) {
+    try {
+      return await Cart.findByIdAndUpdate(cartId, { products: [] }, { new: true });
+    } catch (error) {
+      console.error("Erro ao limpar o carrinho:", error);
+      throw error;
+    }
+  }
 }
 
 module.exports = CartManager;

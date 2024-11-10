@@ -1,0 +1,41 @@
+<h1>Lista de Produtos</h1>
+
+<form method="get" action="/products">
+    <label for="query">Filtro por categoria:</label>
+    <input type="text" id="query" name="query" placeholder="Digite a categoria" />
+    
+    <label for="sort">Ordenação:</label>
+    <select id="sort" name="sort">
+        <option value="">Selecione</option>
+        <option value="asc">Preço Crescente</option>
+        <option value="desc">Preço Decrescente</option>
+    </select>
+
+    <button type="submit">Aplicar Filtros</button>
+</form>
+
+<ul>
+    {{#each products}}
+        <li>
+            <h2>{{this.title}}</h2>
+            <p>{{this.description}}</p>
+            <p>Preço: ${{this.price}}</p>
+            <a href="/products/{{this._id}}">Ver detalhes</a>
+            <form action="/api/carts/{{cartId}}/product/{{this._id}}" method="post">
+                <button type="submit">Adicionar ao carrinho</button>
+            </form>
+        </li>
+    {{/each}}
+</ul>
+
+<div>
+    {{#if hasPrevPage}}
+        <a href="/products?page={{prevPage}}&query={{query}}&sort={{sort}}">Página Anterior</a>
+    {{/if}}
+
+    <span>Página {{currentPage}} de {{totalPages}}</span>
+
+    {{#if hasNextPage}}
+        <a href="/products?page={{nextPage}}&query={{query}}&sort={{sort}}">Próxima Página</a>
+    {{/if}}
+</div>

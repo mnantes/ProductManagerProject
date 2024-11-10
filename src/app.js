@@ -3,9 +3,10 @@ const { Server } = require('socket.io');
 const handlebars = require('express-handlebars');
 const productsRouter = require('./routes/productsRouter');
 const cartsRouter = require('./routes/cartsRouter');
+const viewsRouter = require('./routes/viewsRouter'); // Importa viewsRouter
 const connectDB = require('./config/mongo');
 const ProductManager = require(__dirname + '/managers/ProductManager');
-const Message = require('./models/Message'); // Importa o modelo Message
+const Message = require('./models/Message');
 
 const app = express();
 const port = 8080;
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 // Configurar rotas
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
+app.use('/', viewsRouter); // Adiciona viewsRouter
 
 // Servir arquivos estáticos
 app.use(express.static('public'));
@@ -59,19 +61,16 @@ const io = new Server(server);
 io.on('connection', (socket) => {
   console.log('Novo cliente conectado');
 
-  // Enviar histórico de mensagens ao cliente
   Message.find().then((messages) => {
     socket.emit('messageHistory', messages);
   });
 
-  // Escutar e salvar novas mensagens
   socket.on('sendMessage', async (data) => {
     const newMessage = new Message(data);
     await newMessage.save();
     io.emit('newMessage', data);
   });
 
-  // Adicionar e remover produtos (WebSocket)
   socket.on('addProduct', async (productData) => {
     try {
       const newProduct = await productManager.addProduct(productData);
@@ -92,4 +91,3 @@ io.on('connection', (socket) => {
     }
   });
 });
-
