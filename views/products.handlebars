@@ -21,9 +21,8 @@
             <p>{{this.description}}</p>
             <p>Preço: ${{this.price}}</p>
             <a href="/products/{{this._id}}">Ver detalhes</a>
-            <form action="/api/carts/{{cartId}}/product/{{this._id}}" method="post">
-                <button type="submit">Adicionar ao carrinho</button>
-            </form>
+            <!-- Substituir o formulário pelo botão e função JavaScript -->
+            <button onclick="addToCart('{{../cartId}}', '{{this._id}}')">Adicionar ao carrinho</button>
         </li>
     {{/each}}
 </ul>
@@ -39,3 +38,22 @@
         <a href="/products?page={{nextPage}}&query={{query}}&sort={{sort}}">Próxima Página</a>
     {{/if}}
 </div>
+
+<script>
+    async function addToCart(cartId, productId) {
+        try {
+            const response = await fetch(`/api/carts/${cartId}/product/${productId}`, {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                alert('Produto adicionado ao carrinho com sucesso!');
+            } else {
+                alert('Erro ao adicionar produto ao carrinho.');
+            }
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro ao adicionar produto ao carrinho.');
+        }
+    }
+</script>

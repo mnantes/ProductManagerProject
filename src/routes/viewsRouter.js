@@ -1,6 +1,6 @@
 const express = require('express');
 const Product = require('../models/Product');
-const Cart = require('../models/Cart'); // Importe o modelo Cart
+const Cart = require('../models/Cart');
 const router = express.Router();
 
 router.get('/products', async (req, res) => {
@@ -15,9 +15,14 @@ router.get('/products', async (req, res) => {
 
         const result = await Product.paginate(filter, options);
 
-        // Cria um novo carrinho para o usuário ou usa um existente
-        const cart = await Cart.findOne() || await Cart.create({ products: [] });
-        
+        let cart = await Cart.findOne();
+        if (!cart) {
+            cart = await Cart.create({ products: [] });
+        }
+
+        console.log("Cart ID utilizado:", cart._id.toString()); // Verificação do ID do carrinho
+        console.log("Produtos recuperados:", result.docs);
+
         res.render('products', {
             products: result.docs,
             totalPages: result.totalPages,
@@ -26,31 +31,39 @@ router.get('/products', async (req, res) => {
             hasNextPage: result.hasNextPage,
             prevPage: result.prevPage,
             nextPage: result.nextPage,
-            cartId: cart._id // Passa o ID do carrinho para a view
+            cartId: cart._id.toString()
         });
     } catch (error) {
+        console.error("Erro ao buscar produtos:", error); // Log de erro para verificar problemas
         res.status(500).json({ status: 'error', message: error.message });
     }
 });
 
-// Nova rota para exibir os detalhes de um produto específico
 router.get('/products/:pid', async (req, res) => {
     try {
         const product = await Product.findById(req.params.pid);
         if (!product) {
             return res.status(404).json({ error: 'Produto não encontrado' });
         }
-        res.render('productDetails', { product });
+
+        let cart = await Cart.findOne();
+        if (!cart) {
+            cart = await Cart.create({ products: [] });
+        }
+
+        console.log("Cart ID utilizado:", cart._id.toString()); // Verificação do ID do carrinho
+
+        res.render('productDetails', { product, cartId: cart._id.toString() });
     } catch (error) {
+        console.error("Erro ao buscar detalhes do produto:", error); // Log de erro para verificar problemas
         res.status(500).json({ error: error.message });
     }
 });
 
-// Rota para exibir um carrinho específico
 router.get('/carts/:cid', async (req, res) => {
     try {
         const cartId = req.params.cid;
-        const cart = await Cart.findById(cartId).populate('products.product'); // Popula os detalhes dos produtos
+        const cart = await Cart.findById(cartId).populate('products.product');
 
         if (!cart) {
             return res.status(404).json({ error: 'Carrinho não encontrado' });
@@ -58,6 +71,7 @@ router.get('/carts/:cid', async (req, res) => {
 
         res.render('cart', { cart });
     } catch (error) {
+        console.error("Erro ao buscar carrinho:", error); // Log de erro para verificar problemas
         res.status(500).json({ status: 'error', message: error.message });
     }
 });

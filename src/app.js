@@ -14,8 +14,16 @@ const port = 8080;
 // Conectar ao MongoDB
 connectDB();
 
-// Configurar Handlebars
-app.engine('handlebars', handlebars.engine());
+// Configurar Handlebars com acesso a propriedades de protótipos
+app.engine(
+  'handlebars',
+  handlebars.engine({
+    runtimeOptions: {
+      allowProtoPropertiesByDefault: true,
+      allowProtoMethodsByDefault: true,
+    },
+  })
+);
 app.set('view engine', 'handlebars');
 app.set('views', './views');
 

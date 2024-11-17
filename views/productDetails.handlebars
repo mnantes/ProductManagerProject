@@ -4,6 +4,6 @@
 <p>Categoria: {{product.category}}</p>
 <p>Estoque: {{product.stock}}</p>
 
-<form action="/api/carts/add" method="post">
+<form action="/api/carts/{{cartId}}/product/{{product._id}}" method="post">
     <button type="submit">Adicionar ao carrinho</button>
 </form>

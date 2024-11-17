@@ -27,6 +27,7 @@ router.get('/:cid', async (req, res) => {
 });
 
 router.post('/:cid/product/:pid', async (req, res) => {
+  console.log("Requisição recebida com params:", req.params); // Adicionado para verificação dos parâmetros
   try {
     const cart = await cartManager.addProductToCart(req.params.cid, req.params.pid);
     res.json(cart);
