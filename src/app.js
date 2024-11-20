@@ -1,9 +1,11 @@
 const express = require('express');
 const { Server } = require('socket.io');
 const handlebars = require('express-handlebars');
+const session = require('express-session');
 const productsRouter = require('./routes/productsRouter');
 const cartsRouter = require('./routes/cartsRouter');
-const viewsRouter = require('./routes/viewsRouter'); // Importa viewsRouter
+const viewsRouter = require('./routes/viewsRouter');
+const authRouter = require('./routes/authRouter'); // Importa o authRouter
 const connectDB = require('./config/mongo');
 const ProductManager = require(__dirname + '/managers/ProductManager');
 const Message = require('./models/Message');
@@ -13,6 +15,16 @@ const port = 8080;
 
 // Conectar ao MongoDB
 connectDB();
+
+// Configurar sessão
+app.use(
+  session({
+    secret: 'seuSegredoSuperSeguro',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }
+  })
+);
 
 // Configurar Handlebars com acesso a propriedades de protótipos
 app.engine(
@@ -30,10 +42,27 @@ app.set('views', './views');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Middleware para verificar se o usuário está logado
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isAuthenticated;
+  res.locals.userRole = req.session.userRole || 'user';
+  next();
+});
+
+// Middleware para proteger rotas de produtos para usuários autenticados
+function checkAuth(req, res, next) {
+  if (req.session.isAuthenticated) {
+    next();
+  } else {
+    res.redirect('/auth/login'); // Redireciona para o login se não estiver autenticado
+  }
+}
+
 // Configurar rotas
+app.use('/auth', authRouter); // Configura as rotas de autenticação
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
-app.use('/', viewsRouter); // Adiciona viewsRouter
+app.use('/products', checkAuth, viewsRouter); // Protege a rota de produtos
 
 // Servir arquivos estáticos
 app.use(express.static('public'));

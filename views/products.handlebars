@@ -1,5 +1,13 @@
 <h1>Lista de Produtos</h1>
 
+<!-- Mensagem de boas-vindas e role do usuário -->
+{{#if isAuthenticated}}
+  <p>Bem-vindo, {{userEmail}}! Seu papel é: {{userRole}}</p>
+  <a href="/logout">Logout</a>
+{{else}}
+  <a href="/login">Login</a> | <a href="/register">Registrar</a>
+{{/if}}
+
 <form method="get" action="/products">
     <label for="query">Filtro por categoria:</label>
     <input type="text" id="query" name="query" placeholder="Digite a categoria" />
@@ -21,7 +29,6 @@
             <p>{{this.description}}</p>
             <p>Preço: ${{this.price}}</p>
             <a href="/products/{{this._id}}">Ver detalhes</a>
-            <!-- Substituir o formulário pelo botão e função JavaScript -->
             <button onclick="addToCart('{{../cartId}}', '{{this._id}}')">Adicionar ao carrinho</button>
         </li>
     {{/each}}
