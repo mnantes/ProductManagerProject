@@ -58,22 +58,23 @@ function checkAuth(req, res, next) {
   }
 }
 
+// Redirecionar logout para o caminho correto
+app.get('/logout', (req, res) => {
+  res.redirect('/auth/logout'); // Redireciona para a rota de logout no authRouter
+});
+
 // Configurar rotas
 app.use('/auth', authRouter); // Configura as rotas de autenticação
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
-app.use('/products', checkAuth, viewsRouter); // Protege a rota de produtos
+app.use('/', checkAuth, viewsRouter); // Protege a rota de produtos
 
-// Servir arquivos estáticos
-app.use(express.static('public'));
-
-// Instanciar ProductManager
-const productManager = new ProductManager('products.json');
-
-// Rota para home.handlebars
-app.get('/', async (req, res) => {
-  const products = await productManager.getProducts();
-  res.render('home', { products });
+// Redireciona para login se não autenticado
+app.get('/', (req, res) => {
+  if (!req.session.isAuthenticated) {
+    return res.redirect('/auth/login');
+  }
+  res.redirect('/products'); // Redireciona para a página de produtos
 });
 
 // Rota para realTimeProducts.handlebars
