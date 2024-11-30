@@ -2,10 +2,12 @@ const express = require('express');
 const { Server } = require('socket.io');
 const handlebars = require('express-handlebars');
 const session = require('express-session');
+const passport = require('passport');
+const GitHubStrategy = require('passport-github2').Strategy;
 const productsRouter = require('./routes/productsRouter');
 const cartsRouter = require('./routes/cartsRouter');
 const viewsRouter = require('./routes/viewsRouter');
-const authRouter = require('./routes/authRouter'); // Importa o authRouter
+const authRouter = require('./routes/authRouter');
 const connectDB = require('./config/mongo');
 const ProductManager = require(__dirname + '/managers/ProductManager');
 const Message = require('./models/Message');
@@ -26,6 +28,34 @@ app.use(
   })
 );
 
+// Inicializar Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Configurar estratégia do GitHub
+passport.use(
+  new GitHubStrategy(
+    {
+      clientID: 'Ov23li8WfTk9w7yWXGBS', // Substituir pelo seu Client ID
+      clientSecret: 'f93f40afff1166ef124817fbefb75b93afd94474', // Substituir pelo seu Client Secret
+      callbackURL: 'http://localhost:8080/auth/github/callback'
+    },
+    (accessToken, refreshToken, profile, done) => {
+      // Aqui você pode salvar ou manipular o usuário retornado pelo GitHub
+      return done(null, profile);
+    }
+  )
+);
+
+// Serialização e desserialização do usuário
+passport.serializeUser((user, done) => {
+  done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+  done(null, user);
+});
+
 // Configurar Handlebars com acesso a propriedades de protótipos
 app.engine(
   'handlebars',
@@ -44,37 +74,40 @@ app.use(express.urlencoded({ extended: true }));
 
 // Middleware para verificar se o usuário está logado
 app.use((req, res, next) => {
-  res.locals.isAuthenticated = req.session.isAuthenticated;
-  res.locals.userRole = req.session.userRole || 'user';
+  res.locals.isAuthenticated = req.session.isAuthenticated || req.isAuthenticated();
+  res.locals.userRole = req.session?.userRole || 'user';
   next();
 });
 
 // Middleware para proteger rotas de produtos para usuários autenticados
 function checkAuth(req, res, next) {
-  if (req.session.isAuthenticated) {
+  if (req.isAuthenticated() || req.session.isAuthenticated) {
     next();
   } else {
-    res.redirect('/auth/login'); // Redireciona para o login se não estiver autenticado
+    res.redirect('/auth/login');
   }
 }
 
 // Redirecionar logout para o caminho correto
 app.get('/logout', (req, res) => {
-  res.redirect('/auth/logout'); // Redireciona para a rota de logout no authRouter
+  req.logout((err) => {
+    if (err) return res.status(500).json({ error: 'Erro ao fazer logout' });
+    res.redirect('/auth/login');
+  });
 });
 
 // Configurar rotas
 app.use('/auth', authRouter); // Configura as rotas de autenticação
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
-app.use('/', checkAuth, viewsRouter); // Protege a rota de produtos
+app.use('/', checkAuth, viewsRouter);
 
 // Redireciona para login se não autenticado
 app.get('/', (req, res) => {
-  if (!req.session.isAuthenticated) {
+  if (!req.isAuthenticated() && !req.session.isAuthenticated) {
     return res.redirect('/auth/login');
   }
-  res.redirect('/products'); // Redireciona para a página de produtos
+  res.redirect('/products');
 });
 
 // Rota para realTimeProducts.handlebars
@@ -87,6 +120,18 @@ app.get('/realtimeproducts', async (req, res) => {
 app.get('/chat', (req, res) => {
   res.render('chat');
 });
+
+// Rotas do GitHub para login
+app.get('/auth/github', passport.authenticate('github', { scope: ['user:email'] }));
+
+app.get(
+  '/auth/github/callback',
+  passport.authenticate('github', { failureRedirect: '/auth/login' }),
+  (req, res) => {
+    req.session.isAuthenticated = true;
+    res.redirect('/products');
+  }
+);
 
 // Iniciar servidor
 const server = app.listen(port, () => {
