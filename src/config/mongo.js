@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
-require('dotenv').config();
+const { mongoUri } = require('./config'); // Importa a URI do arquivo config.js
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
     console.log('Conectado ao MongoDB Atlas');
   } catch (error) {
     console.error('Erro ao conectar ao MongoDB:', error);

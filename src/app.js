@@ -11,6 +11,7 @@ const authRouter = require('./routes/authRouter');
 const connectDB = require('./config/mongo');
 const ProductManager = require(__dirname + '/managers/ProductManager');
 const Message = require('./models/Message');
+const config = require('./config/config'); // Importa o arquivo config
 
 const app = express();
 const port = 8080;
@@ -21,7 +22,7 @@ connectDB();
 // Configurar sessão
 app.use(
   session({
-    secret: 'seuSegredoSuperSeguro',
+    secret: config.sessionSecret, // Atualizado para usar o config
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false }
@@ -36,12 +37,11 @@ app.use(passport.session());
 passport.use(
   new GitHubStrategy(
     {
-      clientID: 'Ov23li8WfTk9w7yWXGBS', // Substituir pelo seu Client ID
-      clientSecret: 'f93f40afff1166ef124817fbefb75b93afd94474', // Substituir pelo seu Client Secret
-      callbackURL: 'http://localhost:8080/auth/github/callback'
+      clientID: config.githubClientId, // Atualizado para usar o config
+      clientSecret: config.githubClientSecret, // Atualizado para usar o config
+      callbackURL: 'http://localhost:8080/auth/github/callback',
     },
     (accessToken, refreshToken, profile, done) => {
-      // Aqui você pode salvar ou manipular o usuário retornado pelo GitHub
       return done(null, profile);
     }
   )
@@ -97,7 +97,7 @@ app.get('/logout', (req, res) => {
 });
 
 // Configurar rotas
-app.use('/auth', authRouter); // Configura as rotas de autenticação
+app.use('/auth', authRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/', checkAuth, viewsRouter);

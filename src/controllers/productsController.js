@@ -1,5 +1,4 @@
-// controllers/productsController.js
-const Product = require('../models/Product');
+const ProductDAO = require('../dao/productDao');
 
 exports.getProducts = async (req, res) => {
     try {
@@ -10,7 +9,8 @@ exports.getProducts = async (req, res) => {
             page: parseInt(page),
             sort: sort ? { price: sort === 'asc' ? 1 : -1 } : {}
         };
-        const result = await Product.paginate(filter, options);
+
+        const result = await ProductDAO.getProducts(filter, options);
         res.json({
             status: 'success',
             payload: result.docs,
@@ -30,7 +30,7 @@ exports.getProducts = async (req, res) => {
 
 exports.getProductById = async (req, res) => {
     try {
-        const product = await Product.findById(req.params.pid);
+        const product = await ProductDAO.getProductById(req.params.pid);
         if (product) {
             res.json(product);
         } else {
@@ -43,8 +43,7 @@ exports.getProductById = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
     try {
-        const newProduct = new Product(req.body);
-        await newProduct.save();
+        const newProduct = await ProductDAO.createProduct(req.body);
         res.status(201).json(newProduct);
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -53,7 +52,7 @@ exports.createProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
     try {
-        const updatedProduct = await Product.findByIdAndUpdate(req.params.pid, req.body, { new: true });
+        const updatedProduct = await ProductDAO.updateProduct(req.params.pid, req.body);
         if (updatedProduct) {
             res.json(updatedProduct);
         } else {
@@ -66,7 +65,7 @@ exports.updateProduct = async (req, res) => {
 
 exports.deleteProduct = async (req, res) => {
     try {
-        const deletedProduct = await Product.findByIdAndDelete(req.params.pid);
+        const deletedProduct = await ProductDAO.deleteProduct(req.params.pid);
         if (deletedProduct) {
             res.status(204).send();
         } else {
