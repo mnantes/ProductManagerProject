@@ -1,7 +1,4 @@
-const CartDAO = require('../dao/CartDAO');
-
-// Instanciar a classe do DAO
-const cartDAO = new CartDAO();
+const cartDAO = require('../dao/CartDAO'); // Importa a instância única de CartDAO
 
 exports.getCartById = async (req, res) => {
     try {

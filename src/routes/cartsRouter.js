@@ -1,3 +1,5 @@
+console.log('Carts Router carregado corretamente.');
+
 const express = require('express');
 const {
     getCartById,

@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt'); // Importa o bcrypt para hash de senhas
 const passport = require('passport'); // Importa o Passport
 const GitHubStrategy = require('passport-github2').Strategy; // Importa a estratégia GitHub
+const config = require('../config/config'); // Importa o arquivo de configuração
 const router = express.Router();
 
 // Simulando armazenamento de usuários (pode ser substituído por um banco de dados no futuro)
@@ -11,8 +12,8 @@ const users = [];
 passport.use(
   new GitHubStrategy(
     {
-      clientID: 'SEU_CLIENT_ID',
-      clientSecret: 'SEU_CLIENT_SECRET',
+      clientID: config.githubClientId, // Usa a configuração do .env
+      clientSecret: config.githubClientSecret, // Usa a configuração do .env
       callbackURL: 'http://localhost:8080/auth/github/callback',
     },
     (accessToken, refreshToken, profile, done) => {
@@ -128,3 +129,4 @@ router.get('/logout', (req, res) => {
 });
 
 module.exports = router;
+console.log('Auth Router carregado corretamente.');

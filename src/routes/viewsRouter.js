@@ -1,3 +1,5 @@
+console.log('Views Router carregado corretamente.');
+
 const express = require('express');
 const Product = require('../models/Product');
 const Cart = require('../models/Cart');
