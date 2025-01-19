@@ -1,4 +1,4 @@
-const ProductDAO = require('../dao/productDao');
+const ProductRepository = require('../repositories/ProductRepository');
 
 exports.getProducts = async (req, res) => {
     try {
@@ -10,7 +10,7 @@ exports.getProducts = async (req, res) => {
             sort: sort ? { price: sort === 'asc' ? 1 : -1 } : {}
         };
 
-        const result = await ProductDAO.getProducts(filter, options);
+        const result = await ProductRepository.getProducts(filter, options);
         res.json({
             status: 'success',
             payload: result.docs,
@@ -30,7 +30,7 @@ exports.getProducts = async (req, res) => {
 
 exports.getProductById = async (req, res) => {
     try {
-        const product = await ProductDAO.getProductById(req.params.pid);
+        const product = await ProductRepository.getProductById(req.params.pid);
         if (product) {
             res.json(product);
         } else {
@@ -43,7 +43,7 @@ exports.getProductById = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
     try {
-        const newProduct = await ProductDAO.createProduct(req.body);
+        const newProduct = await ProductRepository.createProduct(req.body);
         res.status(201).json(newProduct);
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -52,7 +52,7 @@ exports.createProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
     try {
-        const updatedProduct = await ProductDAO.updateProduct(req.params.pid, req.body);
+        const updatedProduct = await ProductRepository.updateProduct(req.params.pid, req.body);
         if (updatedProduct) {
             res.json(updatedProduct);
         } else {
@@ -65,7 +65,7 @@ exports.updateProduct = async (req, res) => {
 
 exports.deleteProduct = async (req, res) => {
     try {
-        const deletedProduct = await ProductDAO.deleteProduct(req.params.pid);
+        const deletedProduct = await ProductRepository.deleteProduct(req.params.pid);
         if (deletedProduct) {
             res.status(204).send();
         } else {

@@ -6,6 +6,7 @@ const {
     updateProduct,
     deleteProduct
 } = require('../controllers/productsController'); // Importa os métodos do controller
+const { isAdmin } = require('../middlewares/authMiddleware'); // Importa o middleware de autorização
 
 const router = express.Router();
 
@@ -15,13 +16,13 @@ router.get('/', getProducts);
 // Rota para obter um produto pelo ID
 router.get('/:pid', getProductById);
 
-// Rota para criar um novo produto
-router.post('/', createProduct);
+// Rota para criar um novo produto (Somente admin)
+router.post('/', isAdmin, createProduct);
 
-// Rota para atualizar um produto pelo ID
-router.put('/:pid', updateProduct);
+// Rota para atualizar um produto pelo ID (Somente admin)
+router.put('/:pid', isAdmin, updateProduct);
 
-// Rota para deletar um produto pelo ID
-router.delete('/:pid', deleteProduct);
+// Rota para deletar um produto pelo ID (Somente admin)
+router.delete('/:pid', isAdmin, deleteProduct);
 
 module.exports = router; // Exporta o router para ser usado no app.js

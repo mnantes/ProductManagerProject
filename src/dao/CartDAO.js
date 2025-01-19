@@ -83,6 +83,22 @@ class CartDAO {
       throw new Error("Não foi possível limpar o carrinho.");
     }
   }
+
+  async finalizePurchase(cartId, purchasedProducts) {
+    try {
+      const cart = await this.getCartById(cartId);
+      if (!cart) throw new Error("Carrinho não encontrado.");
+
+      // Removendo produtos comprados do carrinho
+      cart.products = cart.products.filter(item => !purchasedProducts.includes(item.product.toString()));
+      await cart.save();
+
+      return cart;
+    } catch (error) {
+      console.error("Erro ao finalizar compra:", error.message);
+      throw new Error("Não foi possível finalizar a compra.");
+    }
+  }
 }
 
 module.exports = new CartDAO();

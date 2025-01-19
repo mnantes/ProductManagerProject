@@ -4,20 +4,41 @@ const handlebars = require('express-handlebars');
 const session = require('express-session');
 const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
-const productsRouter = require('./routes/productsRouter'); // Importação correta
-const cartsRouter = require('./routes/cartsRouter'); // Importação correta
-const viewsRouter = require('./routes/viewsRouter'); // Importação correta
-const authRouter = require('./routes/authRouter'); // Importação correta
+const productsRouter = require('./routes/productsRouter');
+const cartsRouter = require('./routes/cartsRouter');
+const viewsRouter = require('./routes/viewsRouter');
+const authRouter = require('./routes/authRouter');
+const chatRouter = require('./routes/chatRouter');
+const ticketRouter = require('./routes/TicketRouter');
 const connectDB = require('./config/mongo');
-const ProductManager = require('./managers/ProductManager'); // Ajuste de caminho
+const ProductRepository = require('./repositories/ProductRepository');
 const Message = require('./models/Message');
-const config = require('./config/config'); // Importa o arquivo config
+const config = require('./config/config');
+const logger = require('./utils/logger');
 
 const app = express();
 const port = 8080;
 
 // Conectar ao MongoDB
 connectDB();
+
+// Middleware de Logger
+app.use((req, res, next) => {
+  req.logger = logger;
+  next();
+});
+
+// Rota de Teste para Logs
+app.get('/loggerTest', (req, res) => {
+  req.logger.debug("Log de DEBUG registrado!");
+  req.logger.http("Log de HTTP registrado!");
+  req.logger.info("Log de INFO registrado!");
+  req.logger.warning("Log de WARNING registrado!");
+  req.logger.error("Log de ERROR registrado!");
+  req.logger.fatal("Log de FATAL registrado!");
+
+  res.send("Logs gerados! Confira o console ou os arquivos na pasta logs.");
+});
 
 // Configurar sessão
 app.use(
@@ -90,25 +111,33 @@ app.get('/logout', (req, res) => {
 });
 
 // Configurar rotas
-console.log('Registrando rotas...');
+logger.info('Registrando rotas...');
 try {
-  console.log('Registrando Auth Router...');
+  logger.info('Registrando Auth Router...');
   app.use('/auth', authRouter);
-  console.log('Auth Router registrado com sucesso.');
+  logger.info('Auth Router registrado com sucesso.');
 
-  console.log('Registrando Products Router...');
+  logger.info('Registrando Products Router...');
   app.use('/api/products', productsRouter);
-  console.log('Products Router registrado com sucesso.');
+  logger.info('Products Router registrado com sucesso.');
 
-  console.log('Registrando Carts Router...');
+  logger.info('Registrando Carts Router...');
   app.use('/api/carts', cartsRouter);
-  console.log('Carts Router registrado com sucesso.');
+  logger.info('Carts Router registrado com sucesso.');
 
-  console.log('Registrando Views Router...');
+  logger.info('Registrando Chat Router...');
+  app.use('/api/chat', chatRouter);
+  logger.info('Chat Router registrado com sucesso.');
+
+  logger.info('Registrando Ticket Router...');
+  app.use('/api/tickets', ticketRouter);
+  logger.info('Ticket Router registrado com sucesso.');
+
+  logger.info('Registrando Views Router...');
   app.use('/', checkAuth, viewsRouter);
-  console.log('Views Router registrado com sucesso.');
+  logger.info('Views Router registrado com sucesso.');
 } catch (error) {
-  console.error('Erro ao registrar rotas:', error.message);
+  logger.error('Erro ao registrar rotas:', error.message);
 }
 
 // Página inicial
@@ -121,14 +150,14 @@ app.get('/', (req, res) => {
 
 // Iniciar servidor
 const server = app.listen(port, () => {
-  console.log(`Servidor rodando em http://localhost:${port}`);
+  logger.info(`Servidor rodando em http://localhost:${port}`);
 });
 
 // Configurar WebSocket
 const io = new Server(server);
 
 io.on('connection', (socket) => {
-  console.log('Novo cliente conectado');
+  logger.info('Novo cliente conectado');
   Message.find().then((messages) => {
     socket.emit('messageHistory', messages);
   });
@@ -141,21 +170,21 @@ io.on('connection', (socket) => {
 
   socket.on('addProduct', async (productData) => {
     try {
-      const newProduct = await ProductManager.addProduct(productData);
-      const products = await ProductManager.getProducts();
+      const newProduct = await ProductRepository.createProduct(productData);
+      const products = await ProductRepository.getProducts();
       io.emit('updateProducts', products);
     } catch (error) {
-      console.error(error.message);
+      logger.error(error.message);
     }
   });
 
   socket.on('deleteProduct', async (productId) => {
     try {
-      await ProductManager.deleteProduct(productId);
-      const products = await ProductManager.getProducts();
+      await ProductRepository.deleteProduct(productId);
+      const products = await ProductRepository.getProducts();
       io.emit('updateProducts', products);
     } catch (error) {
-      console.error(error.message);
+      logger.error(error.message);
     }
   });
 });
