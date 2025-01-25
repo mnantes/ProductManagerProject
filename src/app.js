@@ -9,12 +9,13 @@ const cartsRouter = require('./routes/cartsRouter');
 const viewsRouter = require('./routes/viewsRouter');
 const authRouter = require('./routes/authRouter');
 const chatRouter = require('./routes/chatRouter');
-const ticketRouter = require('./routes/TicketRouter');
+const ticketRouter = require('./routes/ticketRouter');
 const connectDB = require('./config/mongo');
 const ProductRepository = require('./repositories/ProductRepository');
 const Message = require('./models/Message');
 const config = require('./config/config');
 const logger = require('./utils/logger');
+const { errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
 const port = 8080;
@@ -110,6 +111,14 @@ app.get('/logout', (req, res) => {
   });
 });
 
+// Página inicial - Redireciona para login se não autenticado
+app.get('/', (req, res) => {
+  if (!req.isAuthenticated() && !req.session.isAuthenticated) {
+    return res.redirect('/auth/login');
+  }
+  res.redirect('/products');
+});
+
 // Configurar rotas
 logger.info('Registrando rotas...');
 try {
@@ -134,19 +143,14 @@ try {
   logger.info('Ticket Router registrado com sucesso.');
 
   logger.info('Registrando Views Router...');
-  app.use('/', checkAuth, viewsRouter);
+  app.use('/', viewsRouter); // Corrige a rota para acessar views corretamente
   logger.info('Views Router registrado com sucesso.');
 } catch (error) {
   logger.error('Erro ao registrar rotas:', error.message);
 }
 
-// Página inicial
-app.get('/', (req, res) => {
-  if (!req.isAuthenticated() && !req.session.isAuthenticated) {
-    return res.redirect('/auth/login');
-  }
-  res.redirect('/products');
-});
+// Middleware de tratamento de erros
+app.use(errorHandler);
 
 // Iniciar servidor
 const server = app.listen(port, () => {

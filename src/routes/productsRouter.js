@@ -6,7 +6,8 @@ const {
     updateProduct,
     deleteProduct
 } = require('../controllers/productsController'); // Importa os métodos do controller
-const { isAdmin } = require('../middlewares/authMiddleware'); // Importa o middleware de autorização
+
+const { isAdmin } = require('../middlewares/authMiddleware'); // Middleware de autorização
 
 const router = express.Router();
 

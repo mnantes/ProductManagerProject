@@ -1,6 +1,7 @@
 const ProductRepository = require('../repositories/ProductRepository');
+const { CustomError } = require('../middlewares/errorHandler');
 
-exports.getProducts = async (req, res) => {
+exports.getProducts = async (req, res, next) => {
     try {
         const { limit = 10, page = 1, sort, query } = req.query;
         const filter = query ? { $or: [{ category: query }, { status: query === 'true' }] } : {};
@@ -24,54 +25,55 @@ exports.getProducts = async (req, res) => {
             nextLink: result.hasNextPage ? `/api/products?limit=${limit}&page=${result.nextPage}&sort=${sort || ''}&query=${query || ''}` : null
         });
     } catch (error) {
-        res.status(500).json({ status: 'error', message: error.message });
+        next(new CustomError('Erro ao buscar produtos', 500));
     }
 };
 
-exports.getProductById = async (req, res) => {
+exports.getProductById = async (req, res, next) => {
     try {
         const product = await ProductRepository.getProductById(req.params.pid);
-        if (product) {
-            res.json(product);
-        } else {
-            res.status(404).json({ error: 'Produto não encontrado' });
+        if (!product) {
+            return next(new CustomError('Produto não encontrado', 404));
         }
+        res.json(product);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        next(new CustomError('Erro ao buscar produto', 500));
     }
 };
 
-exports.createProduct = async (req, res) => {
+exports.createProduct = async (req, res, next) => {
     try {
+        if (!req.body || Object.keys(req.body).length === 0) {
+            throw new CustomError('Dados inválidos para criação do produto', 400);
+        }
+
         const newProduct = await ProductRepository.createProduct(req.body);
         res.status(201).json(newProduct);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        next(new CustomError(error.message || 'Erro ao criar produto', 400));
     }
 };
 
-exports.updateProduct = async (req, res) => {
+exports.updateProduct = async (req, res, next) => {
     try {
         const updatedProduct = await ProductRepository.updateProduct(req.params.pid, req.body);
-        if (updatedProduct) {
-            res.json(updatedProduct);
-        } else {
-            res.status(404).json({ error: 'Produto não encontrado' });
+        if (!updatedProduct) {
+            return next(new CustomError('Produto não encontrado', 404));
         }
+        res.json(updatedProduct);
     } catch (error) {
-        res.status(404).json({ error: error.message });
+        next(new CustomError('Erro ao atualizar produto', 400));
     }
 };
 
-exports.deleteProduct = async (req, res) => {
+exports.deleteProduct = async (req, res, next) => {
     try {
         const deletedProduct = await ProductRepository.deleteProduct(req.params.pid);
-        if (deletedProduct) {
-            res.status(204).send();
-        } else {
-            res.status(404).json({ error: 'Produto não encontrado' });
+        if (!deletedProduct) {
+            return next(new CustomError('Produto não encontrado', 404));
         }
+        res.status(204).send();
     } catch (error) {
-        res.status(404).json({ error: error.message });
+        next(new CustomError('Erro ao deletar produto', 500));
     }
 };
