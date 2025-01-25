@@ -1,38 +1,35 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const User = require('./models/User');
-const connectDB = require('./config/mongo');
+const config = require('./config/config');
 
-const seedUser = async () => {
+const createUser = async () => {
   try {
-    await connectDB();
+    // Conectar ao MongoDB
+    await mongoose.connect(config.mongoUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
 
-    const email = 'profe@profe.com';
-    const password = '1234';
+    console.log('Conectado ao MongoDB');
 
-    // Verificar se o usuário já existe no banco de dados
-    const existingUser = await User.findOne({ email });
-
+    // Verificar se o usuário já existe
+    const existingUser = await User.findOne({ email: 'profe@profe.com' });
     if (existingUser) {
       console.log('Usuário já existe no banco de dados.');
     } else {
       // Criar usuário com senha criptografada
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = new User({
-        email,
-        password: hashedPassword,
-        role: 'admin' // Define como admin, pode ser 'user' se preferir
-      });
+      const hashedPassword = await bcrypt.hash('1234', 10);
+      await User.create({ email: 'profe@profe.com', password: hashedPassword, role: 'admin' });
 
-      await newUser.save();
-      console.log('Usuário criado com sucesso.');
+      console.log('Usuário criado com sucesso!');
     }
-
-    mongoose.connection.close();
   } catch (error) {
-    console.error('Erro ao criar usuário:', error);
-    mongoose.connection.close();
+    console.error('Erro ao criar usuário:', error.message);
+  } finally {
+    mongoose.disconnect();
   }
 };
 
-seedUser();
+createUser();
