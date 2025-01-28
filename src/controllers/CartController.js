@@ -27,6 +27,10 @@ exports.createCart = async (req, res, next) => {
 
 exports.addProductToCart = async (req, res, next) => {
     try {
+        if (!req.session || !req.session.isAuthenticated) {
+            return next(new CustomError('Usuário não autenticado.', 401));
+        }
+
         const cart = await CartRepository.addProductToCart(req.params.cid, req.params.pid);
         res.status(200).json({ status: 'success', data: cart });
     } catch (error) {
@@ -69,9 +73,12 @@ exports.clearCart = async (req, res, next) => {
     }
 };
 
-// **Função para finalizar a compra do carrinho**
 exports.purchaseCart = async (req, res, next) => {
     try {
+        if (!req.session || !req.session.isAuthenticated) {
+            return next(new CustomError('Usuário não autenticado.', 401));
+        }
+
         const cart = await CartRepository.getCartById(req.params.cid);
         if (!cart) {
             return next(new CustomError('Carrinho não encontrado.', 404));

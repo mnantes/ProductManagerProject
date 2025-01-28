@@ -1,5 +1,5 @@
 const isAdmin = (req, res, next) => {
-    if (!req.isAuthenticated() || !req.session.isAuthenticated) {
+    if (!req.session || !req.session.isAuthenticated) {
         return res.status(401).json({ status: 'error', message: 'Usuário não autenticado' });
     }
 
@@ -11,12 +11,13 @@ const isAdmin = (req, res, next) => {
 };
 
 const isUser = (req, res, next) => {
-    if (!req.isAuthenticated() || !req.session.isAuthenticated) {
+    if (!req.session || !req.session.isAuthenticated) {
         return res.status(401).json({ status: 'error', message: 'Usuário não autenticado' });
     }
 
-    if (req.session.userRole !== 'user') {
-        return res.status(403).json({ status: 'error', message: 'Acesso negado. Apenas usuários comuns podem executar esta ação.' });
+    // 🔥 Se o usuário for "admin", ele também pode adicionar produtos ao carrinho
+    if (req.session.userRole !== 'user' && req.session.userRole !== 'admin') {
+        return res.status(403).json({ status: 'error', message: 'Acesso negado. Apenas usuários podem executar esta ação.' });
     }
 
     next();

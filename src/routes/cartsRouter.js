@@ -8,21 +8,18 @@ const {
     updateCart,
     updateProductQuantity,
     clearCart,
-    purchaseCart // 🚀 Nova rota de compra
-} = require('../controllers/CartController'); // Importa os métodos do CartController
-const { isUser } = require('../middlewares/authMiddleware'); // Importa o middleware de autorização
+    purchaseCart
+} = require('../controllers/CartController'); 
+const { isUser } = require('../middlewares/authMiddleware'); 
 
 const router = express.Router();
 
-// Rotas para o carrinho
-router.post('/', createCart); // Criar um novo carrinho
-router.get('/:cid', getCartById); // Buscar um carrinho por ID
-router.post('/:cid/product/:pid', isUser, addProductToCart); // Adicionar produto ao carrinho (Somente usuários)
-router.put('/:cid', updateCart); // Atualizar carrinho com uma lista de produtos
-router.put('/:cid/products/:pid', updateProductQuantity); // Atualizar quantidade de um produto específico no carrinho
-router.delete('/:cid', clearCart); // Remover todos os produtos do carrinho
-
-// 🚀 Nova rota para finalizar a compra
+router.post('/', createCart);
+router.get('/:cid', getCartById);
+router.post('/:cid/product/:pid', isUser, addProductToCart); // ✅ Agora aceita admin e user
+router.put('/:cid', updateCart);
+router.put('/:cid/products/:pid', updateProductQuantity);
+router.delete('/:cid', clearCart);
 router.post('/:cid/purchase', isUser, purchaseCart);
 
 module.exports = router;
