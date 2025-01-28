@@ -11,6 +11,11 @@ class ProductDAO {
 
     async getProductById(productId) {
         try {
+            // ✅ Agora validamos se o ID é do MongoDB antes de buscar
+            if (!productId || productId.length !== 24) {
+                return null; // Se for inválido, retorna null e não gera erro
+            }
+
             return await Product.findById(productId);
         } catch (error) {
             throw new Error('Erro ao buscar produto: ' + error.message);
@@ -28,6 +33,9 @@ class ProductDAO {
 
     async updateProduct(productId, productData) {
         try {
+            if (!productId || productId.length !== 24) {
+                throw new Error('ID inválido para atualização.');
+            }
             return await Product.findByIdAndUpdate(productId, productData, { new: true });
         } catch (error) {
             throw new Error('Erro ao atualizar produto: ' + error.message);
@@ -36,6 +44,9 @@ class ProductDAO {
 
     async deleteProduct(productId) {
         try {
+            if (!productId || productId.length !== 24) {
+                throw new Error('ID inválido para exclusão.');
+            }
             return await Product.findByIdAndDelete(productId);
         } catch (error) {
             throw new Error('Erro ao deletar produto: ' + error.message);

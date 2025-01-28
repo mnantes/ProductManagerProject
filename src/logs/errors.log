@@ -29,3 +29,79 @@
 2025-01-25 13:29:07 [ERROR]: Erro: UNKNOWN_ERROR - Usuário inválido ou sem ID para serializar.
 2025-01-25 13:36:43 [ERROR]: Erro: UNKNOWN_ERROR - Usuário inválido ou sem ID para serializar.
 2025-01-28 17:28:28 [ERROR]: Erro: UNKNOWN_ERROR - Usuário inválido ou sem ID para serializar.
+2025-01-28 18:09:43 [ERROR]: Erro: UNKNOWN_ERROR - Erro desconhecido
+2025-01-28 18:33:16 [ERROR]: Erro: Erro ao buscar produto - 500
+2025-01-28 18:33:16 [ERROR]: Stack Trace:
+Error: 500
+    at exports.getProductById (C:\Users\Usuario\Desktop\eu\proga\back1\src\controllers\productsController.js:40:14)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-01-28 18:40:08 [ERROR]: Erro: ID do produto inválido - 400
+2025-01-28 18:40:08 [ERROR]: Stack Trace:
+Error: 400
+    at exports.getProductById (C:\Users\Usuario\Desktop\eu\proga\back1\src\controllers\productsController.js:39:25)
+    at Layer.handle [as handle_request] (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:284:15
+    at param (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:365:14)
+    at param (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:376:14)
+    at Function.process_params (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:421:3)
+    at next (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:280:10)
+2025-01-28 18:54:33 [ERROR]: Erro: ID do produto inválido - 400
+2025-01-28 18:54:33 [ERROR]: Stack Trace:
+Error: 400
+    at exports.getProductById (C:\Users\Usuario\Desktop\eu\proga\back1\src\controllers\productsController.js:39:25)
+    at Layer.handle [as handle_request] (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:284:15
+    at param (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:365:14)
+    at param (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:376:14)
+    at Function.process_params (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:421:3)
+    at next (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:280:10)
+2025-01-28 18:54:35 [ERROR]: Erro: ID do produto inválido - 400
+2025-01-28 18:54:35 [ERROR]: Stack Trace:
+Error: 400
+    at exports.getProductById (C:\Users\Usuario\Desktop\eu\proga\back1\src\controllers\productsController.js:39:25)
+    at Layer.handle [as handle_request] (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:284:15
+    at param (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:365:14)
+    at param (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:376:14)
+    at Function.process_params (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:421:3)
+    at next (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:280:10)
+2025-01-28 19:10:06 [ERROR]: Erro: ID do produto inválido - 400
+2025-01-28 19:10:06 [ERROR]: Stack Trace:
+Error: 400
+    at exports.getProductById (C:\Users\Usuario\Desktop\eu\proga\back1\src\controllers\productsController.js:39:25)
+    at Layer.handle [as handle_request] (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:284:15
+    at param (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:365:14)
+    at param (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:376:14)
+    at Function.process_params (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:421:3)
+    at next (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:280:10)
+2025-01-28 19:10:06 [ERROR]: Erro: ID do produto inválido - 400
+2025-01-28 19:10:06 [ERROR]: Stack Trace:
+Error: 400
+    at exports.getProductById (C:\Users\Usuario\Desktop\eu\proga\back1\src\controllers\productsController.js:39:25)
+    at Layer.handle [as handle_request] (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\layer.js:95:5)
+    at next (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\layer.js:95:5)
+    at C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:284:15
+    at param (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:365:14)
+    at param (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:376:14)
+    at Function.process_params (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:421:3)
+    at next (C:\Users\Usuario\Desktop\eu\proga\back1\node_modules\express\lib\router\index.js:280:10)
+2025-01-28 19:30:15 [ERROR]: Erro: Produto não encontrado - 404
+2025-01-28 19:30:15 [ERROR]: Stack Trace:
+Error: 404
+    at exports.getProductById (C:\Users\Usuario\Desktop\eu\proga\back1\src\controllers\productsController.js:46:25)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)

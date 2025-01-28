@@ -1,5 +1,6 @@
 const ProductRepository = require('../repositories/ProductRepository');
 const { CustomError } = require('../middlewares/errorHandler');
+const mongoose = require('mongoose'); // Importação necessária para validar ObjectId
 
 exports.getProducts = async (req, res, next) => {
     try {
@@ -31,13 +32,24 @@ exports.getProducts = async (req, res, next) => {
 
 exports.getProductById = async (req, res, next) => {
     try {
-        const product = await ProductRepository.getProductById(req.params.pid);
+        const productId = req.params.pid;
+
+        // ✅ Verifica se o ID tem 24 caracteres antes de buscar (MongoDB usa IDs de 24 caracteres)
+        if (!productId || productId.length !== 24 || !mongoose.Types.ObjectId.isValid(productId)) {
+            console.error(`ID inválido recebido: ${productId}`);
+            return next(new CustomError('ID do produto inválido', 400));
+        }
+
+        const product = await ProductRepository.getProductById(productId);
         if (!product) {
+            console.error(`Produto não encontrado para ID: ${productId}`);
             return next(new CustomError('Produto não encontrado', 404));
         }
+
         res.json(product);
     } catch (error) {
-        next(new CustomError('Erro ao buscar produto', 500));
+        console.error(`Erro ao buscar produto [ID: ${req.params.pid}]:`, error);
+        next(new CustomError(`Erro interno ao buscar produto: ${error.message}`, 500));
     }
 };
 
@@ -56,7 +68,13 @@ exports.createProduct = async (req, res, next) => {
 
 exports.updateProduct = async (req, res, next) => {
     try {
-        const updatedProduct = await ProductRepository.updateProduct(req.params.pid, req.body);
+        const productId = req.params.pid;
+
+        if (!productId || productId.length !== 24 || !mongoose.Types.ObjectId.isValid(productId)) {
+            return next(new CustomError('ID do produto inválido', 400));
+        }
+
+        const updatedProduct = await ProductRepository.updateProduct(productId, req.body);
         if (!updatedProduct) {
             return next(new CustomError('Produto não encontrado', 404));
         }
@@ -68,7 +86,13 @@ exports.updateProduct = async (req, res, next) => {
 
 exports.deleteProduct = async (req, res, next) => {
     try {
-        const deletedProduct = await ProductRepository.deleteProduct(req.params.pid);
+        const productId = req.params.pid;
+
+        if (!productId || productId.length !== 24 || !mongoose.Types.ObjectId.isValid(productId)) {
+            return next(new CustomError('ID do produto inválido', 400));
+        }
+
+        const deletedProduct = await ProductRepository.deleteProduct(productId);
         if (!deletedProduct) {
             return next(new CustomError('Produto não encontrado', 404));
         }
