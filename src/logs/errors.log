@@ -105,3 +105,5 @@ Error: 400
 Error: 404
     at exports.getProductById (C:\Users\Usuario\Desktop\eu\proga\back1\src\controllers\productsController.js:46:25)
     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-02-03 16:53:36 [ERROR]: Log de ERROR registrado!
+2025-02-03 16:53:36 [FATAL]: Log de FATAL registrado!

@@ -654,3 +654,26 @@ Error: 400
 Error: 404
     at exports.getProductById (C:\Users\Usuario\Desktop\eu\proga\back1\src\controllers\productsController.js:46:25)
     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2025-02-03 16:53:25 [INFO]: Conectando ao banco de dados MongoDB...
+2025-02-03 16:53:25 [INFO]: Registrando rotas...
+2025-02-03 16:53:25 [INFO]: Registrando Auth Router...
+2025-02-03 16:53:25 [INFO]: Auth Router registrado com sucesso.
+2025-02-03 16:53:25 [INFO]: Registrando Products Router...
+2025-02-03 16:53:25 [INFO]: Products Router registrado com sucesso.
+2025-02-03 16:53:25 [INFO]: Registrando Carts Router...
+2025-02-03 16:53:25 [INFO]: Carts Router registrado com sucesso.
+2025-02-03 16:53:25 [INFO]: Registrando Chat Router...
+2025-02-03 16:53:25 [INFO]: Chat Router registrado com sucesso.
+2025-02-03 16:53:25 [INFO]: Registrando Ticket Router...
+2025-02-03 16:53:25 [INFO]: Ticket Router registrado com sucesso.
+2025-02-03 16:53:25 [INFO]: Registrando Views Router...
+2025-02-03 16:53:25 [INFO]: Views Router registrado com sucesso.
+2025-02-03 16:53:25 [INFO]: Servidor rodando em http://localhost:8080
+2025-02-03 16:53:25 [INFO]: Conexão com MongoDB estabelecida.
+2025-02-03 16:53:36 [HTTP]: [GET] /loggerTest
+2025-02-03 16:53:36 [HTTP]: Log de HTTP registrado!
+2025-02-03 16:53:36 [INFO]: Log de INFO registrado!
+2025-02-03 16:53:36 [WARNING]: Log de WARNING registrado!
+2025-02-03 16:53:36 [ERROR]: Log de ERROR registrado!
+2025-02-03 16:53:36 [FATAL]: Log de FATAL registrado!
+2025-02-03 16:53:36 [HTTP]: [GET] /favicon.ico

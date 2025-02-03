@@ -21,11 +21,17 @@ const app = express();
 const port = 8080;
 
 // Conectar ao MongoDB
-connectDB();
+logger.info("Conectando ao banco de dados MongoDB...");
+connectDB().then(() => {
+  logger.info("Conexão com MongoDB estabelecida.");
+}).catch(error => {
+  logger.fatal("Erro ao conectar ao MongoDB:", error.message);
+});
 
 // Middleware de Logger
 app.use((req, res, next) => {
   req.logger = logger;
+  logger.http(`[${req.method}] ${req.url}`);
   next();
 });
 
@@ -103,10 +109,14 @@ function checkAuth(req, res, next) {
   }
 }
 
-// Redirecionar logout
+// Redirecionar logout com logging
 app.get('/logout', (req, res) => {
   req.logout((err) => {
-    if (err) return res.status(500).json({ error: 'Erro ao fazer logout' });
+    if (err) {
+      req.logger.error("Erro ao fazer logout:", err.message);
+      return res.status(500).json({ error: 'Erro ao fazer logout' });
+    }
+    req.logger.info("Usuário deslogado com sucesso.");
     res.redirect('/auth/login');
   });
 });
@@ -114,6 +124,7 @@ app.get('/logout', (req, res) => {
 // Página inicial - Redireciona para login se não autenticado
 app.get('/', (req, res) => {
   if (!req.isAuthenticated() && !req.session.isAuthenticated) {
+    req.logger.warning("Usuário não autenticado tentou acessar a página inicial.");
     return res.redirect('/auth/login');
   }
   res.redirect('/products');
@@ -143,7 +154,7 @@ try {
   logger.info('Ticket Router registrado com sucesso.');
 
   logger.info('Registrando Views Router...');
-  app.use('/', viewsRouter); // Corrige a rota para acessar views corretamente
+  app.use('/', viewsRouter);
   logger.info('Views Router registrado com sucesso.');
 } catch (error) {
   logger.error('Erro ao registrar rotas:', error.message);
@@ -167,9 +178,14 @@ io.on('connection', (socket) => {
   });
 
   socket.on('sendMessage', async (data) => {
-    const newMessage = new Message(data);
-    await newMessage.save();
-    io.emit('newMessage', data);
+    try {
+      const newMessage = new Message(data);
+      await newMessage.save();
+      io.emit('newMessage', data);
+      logger.info("Nova mensagem enviada pelo usuário:", data);
+    } catch (error) {
+      logger.error("Erro ao salvar mensagem:", error.message);
+    }
   });
 
   socket.on('addProduct', async (productData) => {
@@ -177,8 +193,9 @@ io.on('connection', (socket) => {
       const newProduct = await ProductRepository.createProduct(productData);
       const products = await ProductRepository.getProducts();
       io.emit('updateProducts', products);
+      logger.info("Produto adicionado com sucesso:", newProduct.title);
     } catch (error) {
-      logger.error(error.message);
+      logger.error("Erro ao adicionar produto:", error.message);
     }
   });
 
@@ -187,8 +204,9 @@ io.on('connection', (socket) => {
       await ProductRepository.deleteProduct(productId);
       const products = await ProductRepository.getProducts();
       io.emit('updateProducts', products);
+      logger.warning("Produto deletado:", productId);
     } catch (error) {
-      logger.error(error.message);
+      logger.error("Erro ao deletar produto:", error.message);
     }
   });
 });
